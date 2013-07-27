@@ -5,6 +5,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -19,9 +20,10 @@ public class FServer {
 	 */
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
+		
+		logger.info("Starting");
 
 		executor = Executors.newFixedThreadPool(5);
-
 		//Start up sequence
 		// Connect to monthership
 		// DL member list
@@ -31,22 +33,22 @@ public class FServer {
 			shutdown();
 			return;
 		}
-
+		
 		//Run loop
 		while(!shutdown) {
-			; //Run threads until shutdown;'
+			//Run threads until shutdown;'
 			try {
 				try {
 					Socket socket = serverSocket.accept();
-					Runnable worker = new RecieveThread(socket);
-					executor.execute(worker);
+					JoinMessageThread worker = new JoinMessageThread(socket);
+					executor.submit(worker);
 				} catch (IOException e) {
 					logger.log(Level.SEVERE, "Can't accept socket", e);
 					e.printStackTrace();
 				}
 				Thread.sleep(500);
 			} catch (InterruptedException e) {
-
+				logger.info("Interrupt");
 			}
 		}
 
